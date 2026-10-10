@@ -1,0 +1,50 @@
+@baseUrl = http://localhost:3000
+@customerToken = TOKEN_CUSTOMER
+@adminToken = TOKEN_ADMIN
+@orderId = id_order
+@productId = id_product
+
+### Crear pedido - customer
+POST {{baseUrl}}/api/orders
+Authorization: Bearer {{customerToken}}
+Content-Type: application/json
+
+{
+  "customerName": "Cliente Prueba",
+  "customerEmail": "cliente.prueba@example.com",
+  "phone": "+34 600 000 000",
+  "address": "Calle Prueba 123",
+  "city": "Sevilla",
+  "country": "España",
+  "postalCode": "41001",
+  "items": [
+    {
+      "productId": "6aa570e9426dc906356d73dc",
+      "productName": "Harina P.A.N",
+      "quantity": 2,
+      "price": 3.5
+    }
+  ],
+  "subtotal": 7,
+  "shipping": 5,
+  "total": 12
+}
+
+### Ver mis pedidos - customer
+GET {{baseUrl}}/api/orders/my-orders
+Authorization: Bearer {{customerToken}}
+
+### Ver todos los pedidos - admin
+GET {{baseUrl}}/api/orders
+Authorization: Bearer {{adminToken}}
+@orderId = ORDER_ID
+
+### Actualizar estado - admin
+PUT {{baseUrl}}/api/orders/{{orderId}}/status
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "status": "processing",
+  "isPaid": false
+}

@@ -1,0 +1,158 @@
+@baseUrl = http://localhost:3000
+@adminToken = ADMIN_TOKEN
+@customerToken = CUSTOMER_TOKEN
+@productId = ID_PRODUCTO
+@orderId = ORDER_ID
+
+### =====================================================
+### SALUD DE LA API
+### =====================================================
+
+GET {{baseUrl}}/api/health
+
+
+### =====================================================
+### AUTENTICACIÓN
+### =====================================================
+
+### Login administrador
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "soyadmin@gmail.com",
+  "password": "123456789999999"
+}
+
+
+### Login cliente
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "mkll23@gmail.com",
+  "password": "202320"
+}
+
+
+### Registrar cliente
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "Cliente Prueba",
+  "email": "cliente.prueba@example.com",
+  "password": "Cliente1234"
+}
+
+
+### =====================================================
+### PRODUCTOS - RUTAS PÚBLICAS
+### =====================================================
+
+### Obtener todos los productos
+GET {{baseUrl}}/api/products
+
+
+### Obtener producto por id
+GET {{baseUrl}}/api/products/{{productId}}
+
+
+### =====================================================
+### PRUEBA SIN TOKEN
+### Debe devolver 401
+### =====================================================
+
+### Intentar crear producto sin autenticación
+POST {{baseUrl}}/api/products
+Content-Type: application/json
+
+{
+  "name": "Producto sin token",
+  "category": "Despensa",
+  "price": 4.5,
+  "stock": 10,
+  "image": "/images/products/harina-pan.webp",
+  "description": "Esta petición debe ser rechazada."
+}
+
+
+### =====================================================
+### PRUEBA CLIENTE
+### Debe devolver 403
+### =====================================================
+
+### Cliente intenta crear producto
+POST {{baseUrl}}/api/products
+Authorization: Bearer {{customerToken}}
+Content-Type: application/json
+
+{
+  "name": "Producto cliente",
+  "category": "Despensa",
+  "price": 3.5,
+  "stock": 10,
+  "image": "/images/products/harina-pan.webp",
+  "description": "Un cliente no debería poder crear productos."
+}
+
+
+### Cliente intenta actualizar producto
+PUT {{baseUrl}}/api/products/{{productId}}
+Authorization: Bearer {{customerToken}}
+Content-Type: application/json
+
+{
+  "name": "Producto modificado por cliente",
+  "category": "Despensa",
+  "price": 5,
+  "stock": 10,
+  "image": "/images/products/harina-pan.webp",
+  "description": "Esta actualización debe ser rechazada."
+}
+
+
+### Cliente intenta eliminar producto
+DELETE {{baseUrl}}/api/products/{{productId}}
+Authorization: Bearer {{customerToken}}
+
+
+### =====================================================
+### PRUEBA ADMINISTRADOR
+### Debe permitir CRUD
+### =====================================================
+
+### Crear producto como administrador
+POST {{baseUrl}}/api/products
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "name": "Harina PAN",
+  "category": "Despensa",
+  "price": 4.5,
+  "stock": 20,
+  "image": "/images/products/harina-pan.webp",
+  "description": "Harina de maíz precocida ideal para preparar arepas."
+}
+
+
+### Actualizar producto como administrador
+PUT {{baseUrl}}/api/products/{{productId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "name": "Harina PAN Amarilla",
+  "category": "Despensa",
+  "price": 4.75,
+  "stock": 18,
+  "image": "/images/products/harina-pan.webp",
+  "description": "Harina de maíz precocida para preparar arepas."
+}
+
+
+### Eliminar producto como administrador
+DELETE {{baseUrl}}/api/products/{{productId}}
+Authorization: Bearer {{adminToken}}
+
