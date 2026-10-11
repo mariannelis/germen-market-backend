@@ -1,20 +1,31 @@
 import dns from 'node:dns'
 import mongoose from 'mongoose'
 
-dns.setServers(['8.8.8.8', '8.8.4.4'])
+// En Windows/local usamos DNS de Google para resolver MongoDB SRV.
+// Vercel utiliza su propio sistema DNS.
+if (!process.env.VERCEL) {
+  dns.setServers(['8.8.8.8', '8.8.4.4'])
+}
 
 async function connectDatabase() {
+    if (mongoose.connection.readyState === 1) {
+    return mongoose.connection
+  }
+
+  if (!process.env.MONGODB_URI) {
+    throw new Error('La variable MONGODB_URI no está configurada')
+  }
+
   try {
-    if (!process.env.MONGODB_URI) {
-      throw new Error('La variable MONGODB_URI no está configurada')
-    }
+    await mongoose.connect(process.env.MONGODB_URI, {
+      serverSelectionTimeoutMS: 10000,
+    })
 
-    await mongoose.connect(process.env.MONGODB_URI)
-
-    console.log('Conexión exitosa a MongoDB')
+    return mongoose.connection
   } catch (error) {
-    console.error('Error al conectar con MongoDB:', error.message)
-    process.exit(1)
+    throw new Error(
+      `Error de conexión a MongoDB: ${error.message}`
+    )
   }
 }
 
